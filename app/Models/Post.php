@@ -27,4 +27,14 @@ class Post extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'post_id', 'id');
+    }
+
+    public function meta()
+    {
+        return $this->hasOne(Meta::class, 'entity_id', 'id');
+    }
 }
