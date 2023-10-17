@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -32,9 +33,19 @@ class AuthController extends Controller
         return response(
             [
                 "status" => "success",
-                "token" => $token
+                "token" => $token,
+                "user" => $user
             ],
             201
         );
+    }
+
+    public function logout()
+    {
+        Auth::user()->tokens->each(function ($token, $key) {
+            $token->delete();
+        });
+    
+        return response()->json(['message' => 'Sesión cerrada exitosamente']);
     }
 }

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->text('content')->nullable();
             $table->string('width')->nullable();
             $table->string('height')->nullable();
-            $table->enum('align', ['start', 'center', 'end'])->default('start');
-            $table->integer('position')->default(0);
+            $table->enum('align', ['start', 'center', 'end'])->nullable()->default('start');
+            $table->integer('position')->nullable()->default(0);
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
