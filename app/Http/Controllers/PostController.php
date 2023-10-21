@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+// use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -48,7 +49,20 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return response()->json($post->load(['meta', 'comments']), 200);
+        return response()->json($post->load(['meta']), 200);
+    }
+
+    public function tags(Post $post){
+        return response()->json($post->tags, 200);
+    }
+
+    public function categories(Post $post){
+        return response()->json($post->categories, 200);
+    }
+
+    public function blocks(Post $post){
+        $blocks = $post->blocks()->orderBy('position', 'asc')->get();
+        return response()->json($blocks, 200);
     }
 
 
@@ -63,32 +77,45 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'slug' => 'required|unique:posts,slug,' . $post->id . '|max:255',
             'extract' => 'required',
-            'featured_image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'published_at' => 'required',
+            // 'published_at' => 'required',
+            'keywords' => 'required',
+            'description' => 'required',
+        ]);
+
+        $post->title = $request->title;
+        $post->slug = Str::slug($request->slug);
+        $post->extract = $request->extract;
+        // $post->published_at = $request->published_at;
+        $post->meta->keywords = $request->keywords; 
+        $post->meta->description = $request->description; 
+        
+        $post->save();
+
+        return response()->json($post, 200);
+    }
+
+    public function updateImage(Post $post, Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
         $imageName = $post->featured_image;
         $prevImage = $post->featured_image;
 
-        if ($request->file('featured_image')) {
+        if ($request->file('image')) {
             // guardar imagen
-            $image = $request->file('featured_image');
+            $image = $request->file('image');
             $imageName = time() . '.' . $image->extension();
-            // Almacenar la imagen en el disco 'public'
             Storage::disk('public')->putFileAs('images', $image, $imageName);
+
         }
 
-        $post->update([
-            'title' => $request->title,
-            'slug' => $request->slug,
-            'extract' => $request->extract,
-            'featured_image' => $imageName,
-            'published_at' => $request->published_at,
-        ]);
+        $post->featured_image = $imageName;
+        $post->save();
 
-        if ($imageName != $prevImage) {
+        if ($post->featured_image != $prevImage) {
             // borrar imagen anterior
             if (Storage::disk('public')->exists('images/' . $prevImage)) {
                 Storage::disk('public')->delete('images/' . $prevImage);
@@ -98,6 +125,53 @@ class PostController extends Controller
         return response()->json($post, 200);
     }
 
+    public function updateSlug(Post $post, Request $request)
+    {
+        $request->validate([
+            'slug' => 'required|unique:posts,slug,' . $post->id . '|max:255',
+        ]);
+
+        $post->slug = $request->slug;
+        $post->save();
+
+        return response()->json($post, 200);
+    }
+
+    public function updateCategory(Post $post, Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required',
+            'action' => 'required',
+            Rule::in(['ATTACH', 'DETACH'])
+        ]);
+
+        if($request->action === "ATTACH")
+        {
+            $post->categories()->attach($request->category_id);
+        }else{
+            $post->categories()->detach($request->category_id);
+        }
+        
+        return response()->json($post->categories, 200);
+    }
+
+    public function updateTag(Post $post, Request $request)
+    {
+        $request->validate([
+            'tag_id' => 'required',
+            'action' => 'required',
+            Rule::in(['ATTACH', 'DETACH'])
+        ]);
+
+        if($request->action === "ATTACH")
+        {
+            $post->tags()->attach($request->tag_id);
+        }else{
+            $post->tags()->detach($request->tag_id);
+        }
+        
+        return response()->json($post->tags, 200);
+    }
     /**
      * Remove the specified resource from storage.
      *
