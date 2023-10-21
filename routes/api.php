@@ -64,6 +64,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('categories', CategoryController::class);
     Route::resource('comments', CommentController::class);
     Route::resource('blocks', BlockController::class);
+
+    Route::post('logout', [AuthController::class,'logout'])->name('logout');
+    Route::get('/me', [AuthController::class,'me'])->name('me');
+
+
 });
 
     Route::post('login', [AuthController::class,'login'])->name('login');
