@@ -15,13 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all(['id', 'name', 'email']);
-        return response(
-            [
-                'status' => 'success',
-                'users' => $users
-            ],
-            200
-        );
+        return response($users, 200);
     }
 
 
