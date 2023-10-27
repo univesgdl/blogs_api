@@ -28,6 +28,11 @@ class Post extends Model
         return $this->belongsToMany(Category::class);
     }
 
+    public function domains()
+    {
+        return $this->belongsToMany(Domain::class);
+    }
+
     public function blocks()
     {
         return $this->hasMany(Block::class, 'post_id', 'id');

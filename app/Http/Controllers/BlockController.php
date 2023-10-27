@@ -18,26 +18,19 @@ class BlockController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Post $post)
+    public function store(Request $request)
     {
         $request->validate([
             'type' => 'required',
-            Rule::in(['TEXT', 'IMAGE', 'VIDEO']),
-            'content' => 'required',
-            'width' => 'nullable',
-            'height' => 'nullable',
-            'align' => 'nullable',
-            'position' => 'required|integer',
+            Rule::in(['text', 'quote', 'heading', 'html', 'image', 'video']),
+            'content' => 'nullable',
+            'post_id' => 'required|exists:posts,id',
         ]);
 
         $block = Block::create([
             'type' => $request->type,
             'content' => $request->content,
-            'width' => $request->width,
-            'height' => $request->height,
-            'align' => $request->align,
-            'position' => $request->position,
-            'post_id' => $post->id,
+            'post_id' => $request->post_id,
         ]);
 
         return response()->json($block, 201);
@@ -54,37 +47,61 @@ class BlockController extends Controller
     {
         $request->validate([
             'content' => 'required',
-            'width' => 'nullable',
-            'height' => 'nullable',
-            'align' => 'nullable',
-            'position' => 'required|integer'
         ]);
+
+        if($block->type === "image"){
+            $request->validate([
+                'content' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
+
+            $image = $request->file('content');
+            $imageName = time() . '.' . $image->extension();
+            Storage::disk('public')->putFileAs('images', $image, $imageName);
+
+            $block->update([
+                'content' => $imageName,
+            ]);
+
+            return response()->json($block, 200);
+        }
 
         $block->update([
             'content' => $request->content,
-            'width' => $request->width,
-            'height' => $request->height,
-            'align' => $request->align,
-            'position' => $request->position
         ]);
 
         return response()->json($block, 200);
     }
 
-    public function updateOrder(Request $request, Post $post)
+    public function updateExtra(Block $block, Request $request)
     {
         $request->validate([
-            'blocks' => 'required'
+            'extra' => 'required'
         ]);
 
-        foreach ($request->blocks as $block) {
-            Block::where('id', $block['id'])->update([
-                'position' => $block['position']
-            ]);
-        }
+        $block->update([
+            'extra'=> $request->extra
+        ]);
 
-        return response()->json($post->blocks, 200);
+        return response()->json($block, 200);
     }
+
+    public function updateImage(Block $block, Request $request)
+    {
+        $request->validate([
+            'content' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $image = $request->file('content');
+        $imageName = time() . '.' . $image->extension();
+        Storage::disk('public')->putFileAs('images', $image, $imageName);
+
+        $block->update([
+            'content' => $imageName,
+        ]);
+
+        return response()->json($block, 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -93,6 +110,11 @@ class BlockController extends Controller
      */
     public function destroy(Block $block)
     {
+        if($block->type === "image"){
+            if(Storage::disk('public')->exists('images/' . $block->content)){
+                Storage::disk('public')->delete('images/' . $block->content);
+            }
+        }
         $block->delete();
 
         return response()->json(["message" => "Block eliminado"], 204);

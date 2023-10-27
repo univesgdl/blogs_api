@@ -15,13 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all(['id', 'name', 'email']);
-        return response(
-            [
-                'status' => 'success',
-                'users' => $users
-            ],
-            200
-        );
+        return response($users, 200);
     }
 
 
@@ -45,13 +39,7 @@ class UserController extends Controller
             "password" => bcrypt($request->password)
         ]);
 
-        return response(
-            [
-                "status" => "success",
-                "user" => $user
-            ],
-            200
-        );
+        return response( $user, 200);
     }
 
     /**
@@ -62,13 +50,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response(
-            [
-                "status" => "success",
-                "user" => $user
-            ],
-            200
-        );
+        return response( $user, 200);
     }
 
 
@@ -94,13 +76,7 @@ class UserController extends Controller
             "password" => $request->password ? bcrypt($request->password) : $user->password
         ]);
 
-        return response(
-            [
-                "status" => "success",
-                "user" => $user
-            ],
-            200
-        );
+        return response( $user, 200);
     }
 
     /**
@@ -113,12 +89,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return response(
-            [
-                "status" => "success",
-                "user" => $user
-            ],
-            200
-        );
+        return response( $user, 200);
     }
 }

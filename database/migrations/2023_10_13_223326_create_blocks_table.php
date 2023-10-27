@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('blocks', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['text', 'quote', 'image', 'video'])->default('text');
+            $table->enum('type', ['text', 'quote', 'heading', 'html', 'image', 'video'])->default('text');
             $table->text('content')->nullable();
-            $table->string('width')->nullable();
-            $table->string('height')->nullable();
-            $table->enum('align', ['start', 'center', 'end'])->nullable()->default('start');
-            $table->integer('position')->nullable()->default(0);
+            $table->text('extra')->nullable();
+            //$table->string('width')->nullable();
+            //$table->string('height')->nullable();
+            //$table->enum('align', ['start', 'center', 'end'])->nullable()->default('start');
+            //$table->integer('position')->nullable()->default(0);
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

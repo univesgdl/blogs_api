@@ -12,7 +12,6 @@ class Meta extends Model
     protected $filable = [
         'keywords',
         'description',
-        'image',
         'entity_id'
     ];
 }

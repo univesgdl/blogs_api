@@ -12,10 +12,11 @@ class Block extends Model
     protected $fillable = [
         'type',
         'content',
-        'width',
-        'height',
-        'align',
-        'position',
+        'extra',
+        // 'width',
+        // 'height',
+        // 'align',
+        //'position',
         'post_id',
     ];
 }

@@ -67,15 +67,13 @@ class TagController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'description' => 'nullable',
-            'slug' => 'required|unique:tags,slug,' . $tag->id . '|max:255',
+            'description' => 'nullable'
         ]);
 
         $randomStrig = Str::random(5);
 
         $tag->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . $randomStrig,
             'description' => $request->description,
         ]);
 

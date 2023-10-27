@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('metas', function (Blueprint $table) {
+        Schema::create('domain_post', function (Blueprint $table) {
             $table->id();
-            $table->text('keywords')->nullable();
-            $table->text('description')->nullable();
-
-            $table->integer('entity_id')->nullable();
+            $table->unsignedBigInteger('domain_id');
+            $table->unsignedBigInteger('post_id');
             $table->timestamps();
+
+            $table->foreign('domain_id')->references('id')->on('domains')->onDelete('cascade');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('metas');
+        Schema::dropIfExists('domain_post');
     }
 };

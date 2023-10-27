@@ -30,24 +30,15 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'description' => 'nullable',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'description' => 'nullable'
         ]);
-        $imageName = null;
 
-        if ($request->file('image')) {
-            // guardar imagen
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->extension();
-            $image->move(public_path('images'), $imageName);
-        }
         $randomStrig = Str::random(5);
 
         $category = Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name) . '-' . $randomStrig,
             'description' => $request->description,
-            'image' => $imageName,
         ]);
 
         return response()->json($category, 201);
@@ -76,35 +67,13 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'description' => 'nullable',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'slug' => 'required|unique:categories,slug,' . $category->id . '|max:255',
+            'description' => 'nullable'
         ]);
-
-        $imageName = $category->image;
-        $prevImage = $category->image;
-
-        if ($request->file('image')) {
-            // guardar imagen
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->extension();
-            // Almacenar la imagen en el disco 'public'
-            Storage::disk('public')->putFileAs('images', $image, $imageName);
-        }
 
         $category->update([
             'name' => $request->name,
-            'slug' => $request->slug,
-            'description' => $request->description,
-            'image' => $imageName,
+            'description' => $request->description
         ]);
-
-        if ($imageName != $prevImage) {
-            // borrar imagen anterior
-            if (Storage::disk('public')->exists('images/' . $prevImage)) {
-                Storage::disk('public')->delete('images/' . $prevImage);
-            }
-        }
 
         return response()->json($category, 200);
     }
