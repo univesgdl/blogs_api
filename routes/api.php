@@ -64,6 +64,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('posts/{post}/updateimage', [PostController::class, 'updateImage']);
     Route::post('posts/{post}/updateslug', [PostController::class, 'updateSlug']);
     Route::post('posts/{post}/updatemeta', [PostController::class, 'updateMeta']);
+    Route::post('posts/{post}/updatepublish', [PostController::class, 'updatePublish']);
+
+
     Route::get('posts/{post}/getcategories', [PostController::class, 'getCategories']);
     Route::get('posts/{post}/gettags', [PostController::class, 'getTags']);
     Route::get('posts/{post}/getdomains', [PostController::class, 'getDomains']);
@@ -88,12 +91,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::prefix('web')->group(function(){
-    Route::get('posts', [WebController::class, 'postsindex']);
-    Route::get('posts/{post:slug}', [WebController::class, 'postsingle']);
-    Route::get('categories/{category:slug}/posts', [WebController::class, 'categoryposts']);
-    Route::get('tags/{tag:slug}/posts', [WebController::class, 'tagposts']);
-    Route::get('posts', [WebController::class, 'postsindex']);
-    Route::get('posts/{post}/comments', [WebController::class, 'postcomments']);
+    Route::get('/{domain:name}/posts', [WebController::class, 'postsindex']);
+    Route::get('/posts/{post:slug}', [WebController::class, 'postsingle']);
+    Route::get('/categoryposts/{domain}/{category}/posts', [WebController::class, 'categorias_posts']);
+    Route::get('/tags/{domain}/{tag}/posts', [WebController::class, 'tagposts']);
+    Route::get('/comments/{domain}/posts/{post}/comments', [WebController::class, 'postcomments']);
 
     Route::post('/posts/{post}/comments/save', [WebController::class, 'saveComment'])->name('saveComment');
 });

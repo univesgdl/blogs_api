@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Domain;
 use App\Models\Post;
 use App\Models\Tag;
-use Illuminate\Http\Request;
 
 class WebController extends Controller
 {
-    public function postsindex()
+    public function postsindex(Domain $domain)
     {
-        $posts = Post::withCount('comments')->get();
+        // $posts = Post::withCount('comments')->get();
+        $posts = $domain->posts()->get();
 
         return response()->json([
             'posts' => $posts
@@ -26,29 +27,36 @@ class WebController extends Controller
         ]);
     }
 
-    public function categoryposts(Category $category)
+    public function categorias_posts(Domain $domain, Category $category)
     {
-        return response()->json([
-            'posts' => $category->posts
-        ]);
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->whereHas('categories', function ($query) use ($category) {
+            $query->where('category_id', $category->id);
+        })->get();
 
+        return response()->json($posts, 200);
     }
 
-    public function tagposts(Tag $tag)
+    public function tagposts(Domain $domain, Tag $tag)
     {
-        return response()->json([
-            'posts' => $tag->posts
-        ]);
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->whereHas('tags', function ($query) use ($tag) {
+            $query->where('tag_id', $tag->id);
+        })->get();
+
+        return response()->json($posts, 200);
     }
 
-    public function comments( Post $post)
+    public function comments(Post $post)
     {
         return response()->json([
             'comments' => $post->comments
         ]);
     }
 
-    public function postComments( Post $post)
+    public function postComments(Post $post)
     {
         return response()->json([
             'comments' => $post->comments

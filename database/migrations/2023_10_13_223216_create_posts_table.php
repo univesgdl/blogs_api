@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('extract')->nullable();
             $table->string('featured_image')->nullable();
             $table->string('slug')->unique();
-            $table->date('published_at')->nullable();
+            $table->boolean('published')->default(false)->nullable();
             $table->timestamps();
         });
     }

@@ -53,7 +53,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return response()->json($post->load(['meta', 'blocks']), 200);
+        return response()->json($post->load(['meta']), 200);
     }
 
     public function tags(Post $post){
@@ -249,6 +249,13 @@ class PostController extends Controller
         }
         
         return response()->json($post->domains, 200);
+    }
+
+    public function updatePublish( Post $post){
+        $post->published = !$post->published;
+        $post->save();
+
+        return response()->json(true, 200);
     }
     /**
      * Remove the specified resource from storage.

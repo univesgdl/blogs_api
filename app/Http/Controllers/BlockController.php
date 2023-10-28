@@ -75,7 +75,7 @@ class BlockController extends Controller
     public function updateExtra(Block $block, Request $request)
     {
         $request->validate([
-            'extra' => 'required'
+            'extra' => 'nullable'
         ]);
 
         $block->update([
