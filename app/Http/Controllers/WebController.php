@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Domain;
 use App\Models\Post;
 use App\Models\Tag;
+use Illuminate\Http\Request;
 
 class WebController extends Controller
 {
@@ -22,8 +23,7 @@ class WebController extends Controller
     public function postsingle(Post $post)
     {
         return response()->json([
-            'post' => $post,
-            'comments' => $post->comments->count()
+            'post' => $post->load(['comments', 'blocks', 'categories', 'tags'])
         ]);
     }
 
@@ -35,6 +35,27 @@ class WebController extends Controller
             $query->where('category_id', $category->id);
         })->get();
 
+        return response()->json($posts, 200);
+    }
+
+    public function domain_posts_limit( Domain $domain, Request $request )
+    {
+        $limit = $request->limit ?? 10;
+        // return $limit;
+
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->limit($limit)->get();
+        
+        return response()->json($posts, 200);
+    }
+
+    public function domain_posts_paginate( Domain $domain)
+    {
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->paginate(10);
+        
         return response()->json($posts, 200);
     }
 
