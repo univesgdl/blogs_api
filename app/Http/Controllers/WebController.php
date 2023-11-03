@@ -23,8 +23,17 @@ class WebController extends Controller
     public function postsingle(Post $post)
     {
         return response()->json([
-            'post' => $post->load(['comments', 'blocks', 'categories', 'tags'])
+            'post' => $post->load(['comments', 'blocks', 'categories', 'tags', 'meta'])
         ]);
+    }
+
+    public function postsrelative(Domain $domain, Post $post)
+    {
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->where('id', '!=', $post->id)->limit(4)->get();
+
+        return response()->json($posts, 200);
     }
 
     public function categorias_posts(Domain $domain, Category $category)
@@ -42,6 +51,11 @@ class WebController extends Controller
     {
         $limit = $request->limit ?? 10;
         // return $limit;
+
+        // $posts = Post::with(['blocks' => function ($query) {
+        //     $query->where('type', 'texto')->take(2);
+        // }])->get();
+        
 
         $posts = Post::whereHas('domains', function ($query) use ($domain) {
             $query->where('domain_id', $domain->id);

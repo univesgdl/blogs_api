@@ -14,6 +14,7 @@ class DomainController extends Controller
      */
     public function index()
     {
+        return "ok";
         return response()->json(Domain::all(), 200);
     }
 

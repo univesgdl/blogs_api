@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Domain;
 use App\Models\Post;
 use App\Models\Tag;
+use Carbon\Carbon;
 // use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -89,7 +90,6 @@ class PostController extends Controller
 
         $post->title = $request->title;
         $post->slug = Str::slug($request->slug);
-        $post->extract = $request->extract;
         // $post->published_at = $request->published_at;
         $post->meta->keywords = $request->keywords; 
         $post->meta->description = $request->description; 
@@ -133,9 +133,15 @@ class PostController extends Controller
     {
         $request->validate([
             'slug' => 'required|unique:posts,slug,' . $post->id . '|max:255',
+            'published_at' => 'required|date',
+            'extract' => 'nullable'
         ]);
 
+        $published_at = Carbon::parse($request->published_at)->format('Y-m-d');
+
         $post->slug = $request->slug;
+        $post->published_at = $published_at;
+        $post->extract = $request->extract;
         $post->save();
 
         return response()->json($post, 200);

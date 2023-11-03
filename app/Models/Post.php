@@ -16,6 +16,7 @@ class Post extends Model
         'featured_image',
         'slug',
         'published_at',
+        'published'
     ];
 
     public function tags()

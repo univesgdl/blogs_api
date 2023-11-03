@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('featured_image')->nullable();
             $table->string('slug')->unique();
             $table->boolean('published')->default(false)->nullable();
+            $table->date('published_at')->default(now()->toDateString());
             $table->timestamps();
         });
     }

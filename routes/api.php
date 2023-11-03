@@ -92,6 +92,7 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::prefix('web')->group(function(){
     Route::get('/{domain:name}/posts', [WebController::class, 'postsindex']);
+    Route::get('/{domain:name}/{post}/relative', [WebController::class, 'postsrelative']);
     Route::get('/{domain:name}/postslimit', [WebController::class, 'domain_posts_limit']);
     Route::get('/{domain:name}/postspaginate', [WebController::class, 'domain_posts_paginate']);
     Route::get('/posts/{post:slug}', [WebController::class, 'postsingle']);

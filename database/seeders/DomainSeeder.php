@@ -15,10 +15,10 @@ class DomainSeeder extends Seeder
      */
     public function run()
     {
-        Domain::create(['name' => 'blog.unives.mx']);
-        Domain::create(['name' => 'unives.mx-noticias']);
-        Domain::create(['name' => 'blog.univesmarket.com']);
-        Domain::create(['name' => 'ihsmex.com-noticias']);
-        Domain::create(['name' => 'ihsmex.com-blog']);
+        Domain::create(['name' => 'unives-blog']);
+        Domain::create(['name' => 'unives-noticias']);
+        Domain::create(['name' => 'univesmarket-blog']);
+        Domain::create(['name' => 'ihsmex-convenios']);
+        Domain::create(['name' => 'ihsmex-blog']);
     }
 }
