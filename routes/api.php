@@ -49,6 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('domains', [DomainController::class, 'index']);
     Route::get('domains/{domain}/details', [DomainController::class, 'show']);
+
+    Route::get('domains/{domain}/getcategories', [DomainController::class, 'getCategories']);
+    Route::get('domains/{domain}/gettags', [DomainController::class, 'getTags']);
+    Route::post('domains/{domain}/updateCategory/', [DomainController::class, 'updateCategory']);
+    Route::post('domains/{domain}/updateTag/', [DomainController::class, 'updateTag']);
+
     Route::post('domains/create', [DomainController::class, 'store']);
     Route::post('domains/{domain}/update', [DomainController::class, 'update']);
     Route::delete('domains/{domain}/delete', [DomainController::class, 'destroy']);
@@ -91,14 +97,20 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::prefix('web')->group(function(){
-    Route::get('/{domain:name}/posts', [WebController::class, 'postsindex']);
-    Route::get('/{domain:name}/{post}/relative', [WebController::class, 'postsrelative']);
-    Route::get('/{domain:name}/postslimit', [WebController::class, 'domain_posts_limit']);
-    Route::get('/{domain:name}/postspaginate', [WebController::class, 'domain_posts_paginate']);
+    Route::get('/domainposts/{domain:name}/posts', [WebController::class, 'postsindex']);
+    Route::get('/domainrelativeposts/{domain:name}/{post}', [WebController::class, 'postsrelative']);
+    Route::get('/domainpostslimit/{domain:name}', [WebController::class, 'domain_posts_limit']);
+    Route::get('/domainpostspaginate/{domain:name}/', [WebController::class, 'domain_posts_paginate']);
+    Route::get('/domaincategories/{domain:name}/categories', [WebController::class, 'domain_categories']);
+    Route::get('/domaintags/{domain:name}/tags', [WebController::class, 'domain_tags']);
+
     Route::get('/posts/{post:slug}', [WebController::class, 'postsingle']);
-    Route::get('/categoryposts/{domain}/{category}/posts', [WebController::class, 'categorias_posts']);
+    Route::get('/categoryposts/{domain:name}/{category:slug}/posts', [WebController::class, 'categorias_posts']);
     Route::get('/tags/{domain}/{tag}/posts', [WebController::class, 'tagposts']);
     Route::get('/comments/{domain}/posts/{post}/comments', [WebController::class, 'postcomments']);
+
+    Route::get('/tagpostspaginate/{domain}/{tag}/', [WebController::class, 'domain_tag_posts_paginate']);
+    Route::get('/categorypostspaginate/{domain}/{category}/', [WebController::class, 'domain_category_posts_paginate']);
 
     Route::post('/posts/{post}/comments/save', [WebController::class, 'saveComment'])->name('saveComment');
 });

@@ -43,8 +43,8 @@ class WebController extends Controller
         })->whereHas('categories', function ($query) use ($category) {
             $query->where('category_id', $category->id);
         })->get();
-
-        return response()->json($posts, 200);
+        // return response()->json($category, 200);
+        return response()->json($posts ?? [], 200);
     }
 
     public function domain_posts_limit( Domain $domain, Request $request )
@@ -71,6 +71,22 @@ class WebController extends Controller
         })->paginate(10);
         
         return response()->json($posts, 200);
+    }
+
+    public function domain_tag_posts_paginate( Domain $domain, Tag $tag)
+    {
+        $posts = Post::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->whereHas('tags', function ($query) use ($tag) {
+            $query->where('tag_id', $tag->id);
+        })->paginate(10);
+        
+        return response()->json($posts, 200);
+    }
+
+    public function domain_category_posts_paginate( Domain $domain, Tag $tag )
+    {
+
     }
 
     public function tagposts(Domain $domain, Tag $tag)
@@ -112,5 +128,23 @@ class WebController extends Controller
         return response()->json([
             'message' => 'Comment added successfully'
         ]);
+    }
+
+    public function domain_categories(Domain $domain)
+    {
+        $categories = Category::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->get();
+
+        return response()->json($categories, 200);
+    }
+
+    public function domain_tags(Domain $domain)
+    {
+        $tags = Tag::whereHas('domains', function ($query) use ($domain) {
+            $query->where('domain_id', $domain->id);
+        })->get();
+
+        return response()->json($tags, 200);
     }
 }

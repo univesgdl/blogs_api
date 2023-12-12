@@ -19,4 +19,9 @@ class Tag extends Model
     {
         return $this->belongsToMany(Post::class);
     }
+
+    public function domains()
+    {
+        return $this->belongsToMany(Domain::class);
+    }
 }
